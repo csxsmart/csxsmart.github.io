@@ -18,6 +18,7 @@ Live site: https://csxsmart.github.io
 
 ## Features
 
+- Bilingual 中文 / English toggle (auto-detects browser language, remembers your choice)
 - Responsive layout (desktop → mobile) with a collapsible nav
 - Light / dark mode toggle (remembers your choice)
 - Sections: About · Research · Projects · Publications · Awards · Skills · News · Contact

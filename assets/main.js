@@ -21,6 +21,30 @@
     });
   }
 
+  /* ---- Language (en / zh) with persistence ---- */
+  var TITLES = {
+    en: "Sixing Chen · AI for Science @ SEU",
+    zh: "陈思行 · AI for Science @ 东南大学"
+  };
+  function applyLang(lang) {
+    root.setAttribute("data-lang", lang);
+    root.setAttribute("lang", lang === "zh" ? "zh-CN" : "en");
+    if (TITLES[lang]) document.title = TITLES[lang];
+  }
+  var storedLang = null;
+  try { storedLang = localStorage.getItem("lang"); } catch (e) {}
+  var navLang = (navigator.language || "en").toLowerCase().indexOf("zh") === 0 ? "zh" : "en";
+  applyLang(storedLang || navLang);
+
+  var langBtn = document.getElementById("langToggle");
+  if (langBtn) {
+    langBtn.addEventListener("click", function () {
+      var next = root.getAttribute("data-lang") === "zh" ? "en" : "zh";
+      applyLang(next);
+      try { localStorage.setItem("lang", next); } catch (e) {}
+    });
+  }
+
   /* ---- Mobile nav ---- */
   var burger = document.getElementById("navToggle");
   var links = document.querySelector(".nav__links");

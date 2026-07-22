@@ -38,6 +38,25 @@
 
 * { box-sizing: border-box; }
 
+/* ===== Bilingual toggle ===== */
+[data-lang="en"] .lang-zh { display: none; }
+[data-lang="zh"] .lang-en { display: none; }
+/* Chinese text uses a proper serif for headings/brand harmony */
+[data-lang="zh"] body,
+[data-lang="zh"] .lead,
+[data-lang="zh"] .prose p,
+[data-lang="zh"] .card p,
+[data-lang="zh"] .project > p,
+[data-lang="zh"] .project__points,
+[data-lang="zh"] .awards__list,
+[data-lang="zh"] .news__text { letter-spacing: .01em; }
+[data-lang="zh"] h1 .lang-zh,
+[data-lang="zh"] h2 .lang-zh,
+[data-lang="zh"] .card h3 .lang-zh,
+[data-lang="zh"] .project h3 .lang-zh,
+[data-lang="zh"] .awards__title .lang-zh,
+[data-lang="zh"] .contact__lead .lang-zh { font-family: "Newsreader", "Noto Serif SC", serif; }
+
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 
 body {
@@ -102,6 +121,7 @@ a:hover { text-decoration: underline; }
   border-radius: 10px; cursor: pointer; transition: border-color .2s, transform .15s;
 }
 .icon-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.icon-btn--text { font-family: var(--mono); font-size: .82rem; font-weight: 500; width: auto; min-width: 38px; padding: 0 10px; }
 .i-moon { display: none; }
 :root[data-theme="dark"] .i-sun  { display: none; }
 :root[data-theme="dark"] .i-moon { display: block; }

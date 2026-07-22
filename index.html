@@ -1,49 +1,358 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sixing chen</title>
-    <link rel="stylesheet" hrf="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sixing Chen · AI for Science @ SEU</title>
+  <meta name="description" content="Sixing Chen (陈思行) — Applied Physics undergraduate at Southeast University. AI for Science: generative models, neural operators, and spatiotemporal modeling of physical systems. AAAI-26 author.">
+  <meta name="author" content="Sixing Chen">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sixing Chen · AI for Science @ SEU">
+  <meta property="og:description" content="Applied Physics undergraduate working on generative models, neural operators, and spatiotemporal modeling for physical systems. AAAI-26 author.">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#about">about me</a></li>
-                <li><a href="#projects">protect</a></li>
-                <li><a href="#contact">contact me</a></li>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ===== Navbar ===== -->
+  <header class="nav" id="top">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#top">SC<span class="dot">.</span></a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#research">Research</a>
+        <a href="#projects">Projects</a>
+        <a href="#publications">Publications</a>
+        <a href="#awards">Awards</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="nav__actions">
+        <button id="themeToggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button id="navToggle" class="icon-btn nav__burger" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <div class="hero__grid">
+        <div class="hero__text">
+          <p class="eyebrow">AI for Science · Southeast University</p>
+          <h1>Sixing Chen<span class="hero__cn">陈思行</span></h1>
+          <p class="lead">
+            Applied Physics undergraduate at Southeast University working on
+            <strong>AI for Science</strong> — generative models, <strong>neural operators</strong>, and
+            spatiotemporal modeling of physical systems. First-author of a paper to appear at
+            <strong>AAAI&nbsp;2026</strong>.
+          </p>
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="#publications">Publications</a>
+            <a class="btn btn--ghost" href="assets/cv.pdf">Curriculum Vitae</a>
+          </div>
+          <ul class="hero__social" aria-label="Profiles">
+            <li><a href="https://github.com/csxsmart" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="mailto:sixingchen@seu.edu.cn">Email</a></li>
+            <li><a href="https://scholar.google.com/" target="_blank" rel="noopener">Scholar</a></li>
+          </ul>
+        </div>
+        <div class="hero__photo">
+          <div class="photo-frame">
+            <img src="assets/profile.jpg" alt="Portrait of Sixing Chen"
+                 onerror="this.classList.add('is-fallback');this.alt='Add assets/profile.jpg';">
+          </div>
+          <div class="photo-caption">陈思行 · Sixing Chen</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section id="about" class="section">
+      <div class="section__head">
+        <span class="section__num">01</span>
+        <h2>About</h2>
+      </div>
+      <div class="prose">
+        <p>
+          I am an undergraduate in <strong>Applied Physics</strong> at the School of Physics,
+          <strong>Southeast University</strong> (2023–present). I work on <em>AI for Science</em>: building
+          generative and operator-learning models that predict, reconstruct, and simulate physical systems.
+        </p>
+        <p>
+          My research spans <strong>diffusion models</strong>, <strong>neural operators</strong>, and
+          <strong>spatiotemporal Transformers</strong>. I have carried a research idea through the full
+          pipeline — from literature review and architecture design to experiments and paper writing — with
+          work accepted at <em>AAAI&nbsp;2026</em>. My physics-and-mathematics background is what I bring to
+          modeling: turning physical priors into useful inductive biases.
+        </p>
+      </div>
+
+      <div class="facts">
+        <div class="fact">
+          <span class="fact__label">Institution</span>
+          <span class="fact__value">Southeast University</span>
+        </div>
+        <div class="fact">
+          <span class="fact__label">Major</span>
+          <span class="fact__value">Applied Physics</span>
+        </div>
+        <div class="fact">
+          <span class="fact__label">Focus</span>
+          <span class="fact__value">AI for Science</span>
+        </div>
+        <div class="fact">
+          <span class="fact__label">Location</span>
+          <span class="fact__value">Nanjing, China</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Research interests ===== -->
+    <section id="research" class="section section--alt">
+      <div class="section__head">
+        <span class="section__num">02</span>
+        <h2>Research interests</h2>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <div class="card__icon">✦</div>
+          <h3>Generative Models</h3>
+          <p>Diffusion models (EDM / DDPM / Flow Matching), VAEs and GANs, and parameter-efficient adaptation with LoRA and adapters for scientific generation tasks.</p>
+        </article>
+        <article class="card">
+          <div class="card__icon">∂</div>
+          <h3>Neural Operators &amp; PDEs</h3>
+          <p>Operator learning and neural-ODE / diffusion hybrids for solving and reconstructing the differential equations that govern physical fields.</p>
+        </article>
+        <article class="card">
+          <div class="card__icon">⟳</div>
+          <h3>Spatiotemporal Modeling</h3>
+          <p>Latent Transformers, autoregressive rollout, and multi-channel architectures for forecasting and reconstructing sparse, heterogeneous physical fields.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Projects / research experience ===== -->
+    <section id="projects" class="section">
+      <div class="section__head">
+        <span class="section__num">03</span>
+        <h2>Research &amp; projects</h2>
+      </div>
+
+      <div class="projects">
+        <article class="project project--wide">
+          <div class="project__meta">
+            <span class="tag">Core member</span>
+            <span class="tag tag--muted">2024.10 – 2025.10</span>
+            <span class="tag tag--muted">Top 5% project</span>
+          </div>
+          <h3>Spatiotemporal Prediction &amp; Reconstruction of Sparse Physical Fields</h3>
+          <p class="project__sub">Multi-channel adaptive deep-learning architecture · Advisors: Prof. Jianwei You &amp; Prof. Yiqian Mao (School of Information Science and Engineering, SEU)</p>
+          <p>
+            A unified three-stage framework for predicting and reconstructing physical fields from
+            heterogeneous, sparse sensor observations (geophysics, meteorology, aerospace) — where sources
+            differ in channel count and spatiotemporal resolution.
+          </p>
+          <ul class="project__points">
+            <li><strong>Stage 1 — Multi-channel adaptive autoencoder:</strong> a shared trunk with channel-wise input/output adapter heads handles any number of channels; zero-init residual ResBlocks (GroupNorm / GELU) and dual-branch down/up-sampling keep deep training stable; a <code>softclip2</code> latent saturation function suppresses latent blow-up.</li>
+            <li><strong>Stage 2 — Latent temporal Transformer:</strong> a Transformer encoder with learnable positional encodings over latent sequences, using <code>einops</code> for efficient <code>(B,T,C,H,W) ↔ (B,T,D)</code> reshaping and configurable autoregressive multi-step forecasting.</li>
+            <li><strong>Stage 3 — EDM-style diffusion refiner:</strong> a Diffusion UNet with sinusoidal time embeddings and multi-scale skips, using a 2nd-order Heun sampler to recover pixel-level detail in just 4–8 steps.</li>
+          </ul>
+          <p class="project__note">Independently designed and implemented the multi-channel adaptation modules and the latent diffusion-refinement pipeline; markedly improved reconstruction and multi-step prediction accuracy over baselines. Rated a <strong>Top 5%</strong> project.</p>
+        </article>
+
+        <article class="project">
+          <div class="project__meta">
+            <span class="tag">Member</span>
+            <span class="tag tag--muted">2024.09 – present</span>
+          </div>
+          <h3>Spatiotemporal Modeling &amp; Scientific Computing Group</h3>
+          <p>
+            AI for Science reading &amp; research group (temporal modeling, PDE solving) at the School of
+            Information Science and Engineering, SEU.
+          </p>
+          <ul class="project__points">
+            <li>Track frontier algorithms and reproduce top-conference SOTA methods</li>
+            <li>Participate in academic discussions and collaborative paper writing</li>
+          </ul>
+        </article>
+
+        <article class="project project--placeholder">
+          <div class="project__meta">
+            <span class="tag tag--muted">More on GitHub</span>
+          </div>
+          <h3>Code &amp; experiments</h3>
+          <p>Implementations, reproductions, and side projects live on my GitHub.</p>
+          <div class="project__links">
+            <a href="https://github.com/csxsmart" target="_blank" rel="noopener">github.com/csxsmart</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Publications ===== -->
+    <section id="publications" class="section section--alt">
+      <div class="section__head">
+        <span class="section__num">04</span>
+        <h2>Publications</h2>
+      </div>
+      <ol class="pubs">
+        <li class="pub">
+          <div class="pub__year">2026</div>
+          <div class="pub__body">
+            <span class="badge badge--accent">AAAI 2026</span>
+            <h3>NODiff: Neural Operator Diffusion for Multispectral Image Fusion</h3>
+            <p class="pub__authors">
+              Junming Hou*, Ran Ran*, <strong>Sixing Chen*</strong>, Zihao Chen, Xiaofeng Cong, Junling Li, Liang-Jian Deng
+              <span class="pub__eq">(* equal contribution)</span>
+            </p>
+            <p class="pub__venue">To appear in the 40th AAAI Conference on Artificial Intelligence (AAAI-26), Feb 2026</p>
+            <ul class="pub__points">
+              <li>A diffusion generative framework built on neural ordinary-differential operators</li>
+              <li>Conditional detail-guided adapter and a time-aware LoRA fine-tuning mechanism</li>
+              <li>SOTA on three benchmarks with substantially lower computational cost</li>
             </ul>
-        </nav>
-    </header>
-
-    <section id="home">
-        <h1>welcome</h1>
-        <img src="profile.jpg" alt="个人照片">
-        <p>Hi, I'm Si-Hsing Chen, an undergraduate student in applied physics with a passion for mathematical physics. Dedicated to machine learning and deep learning。</p>
+          </div>
+        </li>
+      </ol>
+      <p class="muted pubs__note">* denotes equal contribution. See <a href="https://scholar.google.com/" target="_blank" rel="noopener">Google Scholar</a> for updates.</p>
     </section>
 
-    <section id="about">
-        <h2>about me</h2>
-        <p>I am currently pursuing a degree in Applied Physics at Southeast University, and hope to delve into machine learning and deep learning in the future.</p>
+    <!-- ===== Awards ===== -->
+    <section id="awards" class="section">
+      <div class="section__head">
+        <span class="section__num">05</span>
+        <h2>Honors &amp; awards</h2>
+      </div>
+
+      <div class="awards">
+        <div class="awards__col">
+          <h3 class="awards__title">Mathematical modeling</h3>
+          <ul class="awards__list">
+            <li><span class="awards__date">2025.01</span><span>Meritorious Winner (H Prize), Mathematical Contest in Modeling (MCM/ICM)</span></li>
+            <li><span class="awards__date">2024.09</span><span>Provincial First Prize (Jiangsu), China Undergraduate Mathematical Contest in Modeling</span></li>
+            <li><span class="awards__date">2025.05</span><span>Second Prize, Southeast University Mathematical Modeling Contest</span></li>
+          </ul>
+        </div>
+        <div class="awards__col">
+          <h3 class="awards__title">Mathematics competitions</h3>
+          <ul class="awards__list">
+            <li><span class="awards__date">2024.06</span><span>First Prize, 21st Jiangsu Advanced Mathematics Competition</span></li>
+            <li><span class="awards__date">2025.06</span><span>Second Prize, 22nd Jiangsu Advanced Mathematics Competition</span></li>
+            <li><span class="awards__date">2024.12</span><span>Third Prize (non-math track), 15th Chinese Mathematics Competition</span></li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <section id="projects">
-        <h2>projects</h2>
-        <ul>
-            <li></li>
-            <li></li>
-        </ul>
+    <!-- ===== Skills ===== -->
+    <section id="skills" class="section section--alt">
+      <div class="section__head">
+        <span class="section__num">06</span>
+        <h2>Technical skills</h2>
+      </div>
+      <div class="skills">
+        <div class="skill-group">
+          <h3>Languages</h3>
+          <div class="chips">
+            <span class="chip">Python</span><span class="chip">C++</span><span class="chip">MATLAB</span>
+            <span class="chip">LaTeX</span><span class="chip">Markdown</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Deep-learning stack</h3>
+          <div class="chips">
+            <span class="chip">PyTorch</span><span class="chip">NumPy</span><span class="chip">SciPy</span>
+            <span class="chip">Pandas</span><span class="chip">einops</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Generative models</h3>
+          <div class="chips">
+            <span class="chip">Diffusion (EDM / DDPM)</span><span class="chip">Flow Matching</span>
+            <span class="chip">VAE</span><span class="chip">GAN</span><span class="chip">LoRA / Adapter</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Sequence &amp; spatiotemporal</h3>
+          <div class="chips">
+            <span class="chip">Transformers</span><span class="chip">Neural Operators</span>
+            <span class="chip">Latent autoregression</span><span class="chip">LSTM / TCN</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Engineering</h3>
+          <div class="chips">
+            <span class="chip">DDP / FSDP</span><span class="chip">Mixed precision (AMP)</span>
+            <span class="chip">Linux</span><span class="chip">Git</span><span class="chip">SLURM</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="contact">
-        <h2>contact me</h2>
-        <p>邮箱: sixingchen@seu.edu.cn</p>
-        <p><a href="https://github.com/chen-sixing">GitHub</a></p>
+    <!-- ===== News ===== -->
+    <section id="news" class="section">
+      <div class="section__head">
+        <span class="section__num">07</span>
+        <h2>News</h2>
+      </div>
+      <ul class="news">
+        <li><span class="news__date">2026 · 07</span><span class="news__text">Launched a redesigned academic homepage.</span></li>
+        <li><span class="news__date">2025 · 12</span><span class="news__text"><strong>NODiff</strong> accepted to <strong>AAAI 2026</strong> (first author, equal contribution).</span></li>
+        <li><span class="news__date">2025 · 10</span><span class="news__text">Sparse physical-field prediction project rated <strong>Top 5%</strong> at completion.</span></li>
+        <li><span class="news__date">2025 · 01</span><span class="news__text">Meritorious Winner (H Prize) at MCM/ICM 2025.</span></li>
+      </ul>
     </section>
 
-    <footer>
-        <p>&copy; 2024 Sixing Chen | 所有权利保留</p>
-    </footer>
+    <!-- ===== Contact ===== -->
+    <section id="contact" class="section section--alt">
+      <div class="section__head">
+        <span class="section__num">08</span>
+        <h2>Contact</h2>
+      </div>
+      <div class="contact">
+        <p class="contact__lead">
+          Interested in AI for Science, generative models, or collaboration? I'd be glad to hear from you.
+        </p>
+        <div class="contact__grid">
+          <a class="contact__item" href="mailto:sixingchen@seu.edu.cn">
+            <span class="contact__k">University email</span>
+            <span class="contact__v">sixingchen@seu.edu.cn</span>
+          </a>
+          <a class="contact__item" href="https://github.com/csxsmart" target="_blank" rel="noopener">
+            <span class="contact__k">GitHub</span>
+            <span class="contact__v">github.com/csxsmart</span>
+          </a>
+          <a class="contact__item" href="https://scholar.google.com/" target="_blank" rel="noopener">
+            <span class="contact__k">Google Scholar</span>
+            <span class="contact__v">Add your profile link</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>© <span id="year"></span> Sixing Chen · 陈思行</span>
+      <span class="footer__made">Built with HTML &amp; CSS · Hosted on GitHub Pages</span>
+      <a href="#top" class="footer__top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script src="assets/main.js"></script>
 </body>
 </html>

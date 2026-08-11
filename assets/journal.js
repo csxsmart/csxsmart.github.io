@@ -96,8 +96,11 @@
   }
 
   function renderEntries() {
-    if (!entries.length) return;
     var lang = currentLanguage();
+    if (!entries.length) {
+      list.innerHTML = '<p class="journal-empty">' + (lang === "zh" ? "还没有日志。" : "No journal entries yet.") + '</p>';
+      return;
+    }
 
     list.innerHTML = entries.map(function (entry) {
       var title = lang === "zh" ? entry.title : (entry.titleEn || entry.title);
@@ -158,6 +161,7 @@
   var editorForm = document.getElementById("journalEditorForm");
   var editorClose = document.getElementById("journalEditorClose");
   var editorCancel = document.getElementById("journalEditorCancel");
+  var editorDelete = document.getElementById("journalEditorDelete");
   var editorPublish = document.getElementById("journalEditorPublish");
   var editorDate = document.getElementById("journalEditorDate");
   var editorEntryTitle = document.getElementById("journalEditorEntryTitle");
@@ -168,6 +172,7 @@
   var editorPreviewWrap = editorDialog && editorDialog.querySelector(".journal-editor__preview-wrap");
   var editorStatus = document.getElementById("journalEditorStatus");
   var editorDirty = false;
+  var editorExistingEntry = null;
   var lastEditorDate = "";
   var apiBase = "https://api.github.com/repos/csxsmart/csxsmart.github.io";
 
@@ -199,6 +204,7 @@
 
   function setEditorBusy(busy) {
     if (editorPublish) editorPublish.disabled = busy;
+    if (editorDelete) editorDelete.disabled = busy;
     if (editorClose) editorClose.disabled = busy;
     if (editorCancel) editorCancel.disabled = busy;
     if (editorForm) editorForm.setAttribute("aria-busy", String(busy));
@@ -246,6 +252,8 @@
 
   function loadEditorDate(date) {
     var existing = entries.find(function (entry) { return entry.date === date; });
+    editorExistingEntry = existing || null;
+    if (editorDelete) editorDelete.hidden = !existing;
     lastEditorDate = date;
     editorDate.value = date;
     editorEntryTitle.value = existing ? existing.title : "";
@@ -298,6 +306,109 @@
     editorStatus.appendChild(link);
     editorStatus.appendChild(document.createTextNode(currentLanguage() === "zh" ? "。网页通常会在片刻后更新。" : ". GitHub Pages should update shortly."));
     editorDate.value = date;
+  }
+
+  function showDeleteSuccess(commitSha) {
+    setEditorStatus("", "success");
+    var message = document.createTextNode(currentLanguage() === "zh" ? "删除成功。查看提交 " : "Deleted successfully. View commit ");
+    var link = document.createElement("a");
+    link.href = "https://github.com/csxsmart/csxsmart.github.io/commit/" + commitSha;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = commitSha.slice(0, 7) + " ↗";
+    editorStatus.appendChild(message);
+    editorStatus.appendChild(link);
+    editorStatus.appendChild(document.createTextNode(currentLanguage() === "zh" ? "。网页通常会在片刻后更新。" : ". GitHub Pages should update shortly."));
+  }
+
+  function deleteEntry() {
+    if (!editorExistingEntry) return;
+    var token = editorToken.value.trim();
+    if (!token) {
+      setEditorStatus(currentLanguage() === "zh" ? "请先粘贴 GitHub Token。" : "Paste your GitHub token first.", "error");
+      editorToken.focus();
+      return;
+    }
+
+    var date = editorExistingEntry.date;
+    var title = editorExistingEntry.title;
+    var warning = currentLanguage() === "zh"
+      ? "确定永久删除“" + title + "”（" + date + "）吗？删除后需要通过 Git 历史才能恢复。"
+      : "Permanently delete “" + title + "” (" + date + ")? Recovery will require Git history.";
+    if (!window.confirm(warning)) return;
+
+    setEditorBusy(true);
+    setEditorStatus(currentLanguage() === "zh" ? "正在从 GitHub 删除日志……" : "Deleting the entry from GitHub…", "working");
+
+    var headSha;
+    var baseTreeSha;
+    var remoteEntries;
+    var deletedFile;
+
+    githubRequest("/git/ref/heads/main", token)
+      .then(function (ref) {
+        headSha = ref.object.sha;
+        return Promise.all([
+          githubRequest("/git/commits/" + headSha, token),
+          githubRequest("/contents/journal/entries.json?ref=" + encodeURIComponent(headSha), token)
+        ]);
+      })
+      .then(function (results) {
+        baseTreeSha = results[0].tree.sha;
+        remoteEntries = JSON.parse(decodeBase64Utf8(results[1].content));
+        if (!Array.isArray(remoteEntries)) throw new Error(currentLanguage() === "zh" ? "远端日志索引格式无效。" : "The remote journal index is invalid.");
+
+        var remoteEntry = remoteEntries.find(function (entry) { return entry.date === date; });
+        if (!remoteEntry) throw new Error(currentLanguage() === "zh" ? "远端已经没有这篇日志，请刷新页面。" : "This entry no longer exists remotely. Refresh the page.");
+        deletedFile = remoteEntry.file;
+        remoteEntries = remoteEntries.filter(function (entry) { return entry.date !== date; });
+
+        return githubRequest("/git/trees", token, {
+          method: "POST",
+          body: {
+            base_tree: baseTreeSha,
+            tree: [
+              { path: deletedFile, mode: "100644", type: "blob", sha: null },
+              { path: "journal/entries.json", mode: "100644", type: "blob", content: JSON.stringify(remoteEntries, null, 2) + "\n" }
+            ]
+          }
+        });
+      })
+      .then(function (tree) {
+        return githubRequest("/git/commits", token, {
+          method: "POST",
+          body: {
+            message: "Delete journal entry for " + date,
+            tree: tree.sha,
+            parents: [headSha]
+          }
+        });
+      })
+      .then(function (commit) {
+        return githubRequest("/git/refs/heads/main", token, {
+          method: "PATCH",
+          body: { sha: commit.sha, force: false }
+        }).then(function () { return commit; });
+      })
+      .then(function (commit) {
+        entries = remoteEntries;
+        renderEntries();
+        editorToken.value = "";
+        editorEntryTitle.value = "";
+        editorExcerpt.value = "";
+        editorBody.value = "";
+        editorDirty = false;
+        editorExistingEntry = null;
+        editorDelete.hidden = true;
+        updatePreview();
+        showDeleteSuccess(commit.sha);
+      })
+      .catch(function (error) {
+        setEditorStatus(error.message, "error");
+      })
+      .finally(function () {
+        setEditorBusy(false);
+      });
   }
 
   function publishEntry(event) {
@@ -379,6 +490,8 @@
       .then(function (commit) {
         entries = remoteEntries;
         renderEntries();
+        editorExistingEntry = entries.find(function (entry) { return entry.date === date; }) || null;
+        editorDelete.hidden = !editorExistingEntry;
         editorToken.value = "";
         editorDirty = false;
         showPublishSuccess(commit.sha, date);
@@ -423,6 +536,7 @@
 
     editorPreviewWrap.addEventListener("toggle", updatePreview);
     editorForm.addEventListener("submit", publishEntry);
+    editorDelete.addEventListener("click", deleteEntry);
     editorClose.addEventListener("click", closeEditor);
     editorCancel.addEventListener("click", closeEditor);
     editorDialog.addEventListener("cancel", function (event) {

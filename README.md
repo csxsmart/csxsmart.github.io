@@ -64,6 +64,8 @@ The Journal section also includes an owner-only publishing workflow:
 3. Give the token **Contents: Read and write** permission. No other repository permissions are required.
 4. Write or update the entry, paste the token, and select **Publish to GitHub**.
 
+To delete an entry, select its date in the editor, paste the token, and choose **Delete entry / 删除日志**. The delete button appears only when that date already has an entry. Deletion removes the Markdown file and its index record in the same non-force commit.
+
 The browser creates one Git commit containing both the Markdown file and `journal/entries.json`, then advances `main` without a force push. The token is kept only in the password field for the current page session; it is never stored in cookies, `localStorage`, `sessionStorage`, the repository, or analytics.
 
 ## Deploy

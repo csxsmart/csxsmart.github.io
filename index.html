@@ -31,6 +31,7 @@
         <a href="#publications"><span class="lang-en">Publications</span><span class="lang-zh">论文</span></a>
         <a href="#awards"><span class="lang-en">Awards</span><span class="lang-zh">荣誉</span></a>
         <a href="#skills"><span class="lang-en">Skills</span><span class="lang-zh">技能</span></a>
+        <a href="#journal"><span class="lang-en">Journal</span><span class="lang-zh">日志</span></a>
         <a href="#contact"><span class="lang-en">Contact</span><span class="lang-zh">联系</span></a>
       </nav>
       <div class="nav__actions">
@@ -331,10 +332,53 @@
       </ul>
     </section>
 
-    <!-- ===== Contact ===== -->
-    <section id="contact" class="section section--alt">
+    <!-- ===== Journal ===== -->
+    <section id="journal" class="section section--alt">
       <div class="section__head">
         <span class="section__num">08</span>
+        <h2><span class="lang-en">Journal</span><span class="lang-zh">生活日志</span></h2>
+      </div>
+      <div class="journal">
+        <div class="journal__intro">
+          <p class="journal__eyebrow"><span class="lang-en">Notes from everyday life</span><span class="lang-zh">记下生活，也记下思考</span></p>
+          <p>
+            <span class="lang-en">A quiet record of research, choices, uncertainty, and ordinary days. Entries are written in Chinese and kept as Markdown files.</span>
+            <span class="lang-zh">记录科研、选择、迷茫，以及那些值得留住的普通日子。所有原稿均以 Markdown 保存。</span>
+          </p>
+        </div>
+        <div id="journalList" class="journal__list" aria-live="polite">
+          <article class="journal-entry">
+            <time class="journal-entry__date" datetime="2026-08-11">2026 · 08 · 11</time>
+            <div class="journal-entry__body">
+              <div class="journal-entry__meta"><span class="journal-entry__tag"><span class="lang-en">Life</span><span class="lang-zh">生活记录</span></span></div>
+              <h3>大雨、让鸡与未来的方向</h3>
+              <p><span class="lang-en">A rainy day of interrupted research, uncertainty about the future, and a small act of kindness to a stranger.</span><span class="lang-zh">大雨打乱了原有节奏，也让我重新思考科研、考研与未来方向。</span></p>
+              <a class="journal-entry__link" href="journal/2026-08-11.md" data-journal-file="journal/2026-08-11.md" data-journal-title="大雨、让鸡与未来的方向" data-journal-date="2026年8月11日">
+                <span class="lang-en">Read entry</span><span class="lang-zh">阅读全文</span><span aria-hidden="true"> →</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <dialog id="journalDialog" class="journal-dialog" aria-labelledby="journalDialogTitle">
+      <div class="journal-dialog__bar">
+        <div>
+          <time id="journalDialogDate" class="journal-dialog__date"></time>
+          <h2 id="journalDialogTitle"></h2>
+        </div>
+        <button id="journalDialogClose" class="journal-dialog__close" type="button" aria-label="Close journal entry">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div id="journalDialogContent" class="journal-dialog__content"></div>
+    </dialog>
+
+    <!-- ===== Contact ===== -->
+    <section id="contact" class="section">
+      <div class="section__head">
+        <span class="section__num">09</span>
         <h2><span class="lang-en">Contact</span><span class="lang-zh">联系方式</span></h2>
       </div>
       <div class="contact">
@@ -366,5 +410,6 @@
   </footer>
 
   <script src="assets/main.js"></script>
+  <script src="assets/journal.js"></script>
 </body>
 </html>

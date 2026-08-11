@@ -21,7 +21,7 @@ Live site: https://csxsmart.github.io
 - Bilingual 中文 / English toggle (auto-detects browser language, remembers your choice)
 - Responsive layout (desktop → mobile) with a collapsible nav
 - Light / dark mode toggle (remembers your choice)
-- Sections: About · Research · Projects · Publications · Awards · Skills · News · Contact
+- Sections: About · Research · Projects · Publications · Awards · Skills · News · Journal · Contact
 - No build step, no dependencies — pure HTML/CSS/JS
 - Fonts from Google Fonts (Newsreader + Inter + JetBrains Mono)
 
@@ -36,6 +36,7 @@ Everything lives in `index.html`. Common edits:
 | Add a project | Copy a `<article class="project">…</article>` block in the Projects section |
 | Add a publication | Copy a `<li class="pub">…</li>` block in the Publications section |
 | Add a news item | Copy a `<li>` in the News section |
+| Add a journal entry | Add a Markdown file under `journal/`, then add its metadata to `journal/entries.json` |
 | Accent color | Edit `--accent` in `assets/style.css` |
 | Links (GitHub / email / Scholar) | Search for `href=` in `index.html` |
 
@@ -45,6 +46,14 @@ Everything lives in `index.html`. Common edits:
 npx http-server -p 8080
 # then open http://localhost:8080
 ```
+
+## Add a journal entry
+
+1. Create `journal/YYYY-MM-DD.md` and write the entry in Markdown.
+2. Add a corresponding object to `journal/entries.json` with `date`, `title`, `titleEn`, `excerpt`, `excerptEn`, and `file`.
+3. Commit and push both files. The homepage sorts entries by date and displays the newest first.
+
+Because this is a static GitHub Pages site, the journal reader can display Markdown but cannot write changes back to GitHub from the browser.
 
 ## Deploy
 

@@ -53,7 +53,18 @@ npx http-server -p 8080
 2. Add a corresponding object to `journal/entries.json` with `date`, `title`, `titleEn`, `excerpt`, `excerptEn`, and `file`.
 3. Commit and push both files. The homepage sorts entries by date and displays the newest first.
 
-Because this is a static GitHub Pages site, the journal reader can display Markdown but cannot write changes back to GitHub from the browser.
+Because this is a static GitHub Pages site, publishing from the browser uses GitHub's API directly and requires an owner-provided token; no token is built into the site.
+
+### Publish from the website
+
+The Journal section also includes an owner-only publishing workflow:
+
+1. Select **Write an entry / 写一篇日志**.
+2. Create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) limited to `csxsmart/csxsmart.github.io`.
+3. Give the token **Contents: Read and write** permission. No other repository permissions are required.
+4. Write or update the entry, paste the token, and select **Publish to GitHub**.
+
+The browser creates one Git commit containing both the Markdown file and `journal/entries.json`, then advances `main` without a force push. The token is kept only in the password field for the current page session; it is never stored in cookies, `localStorage`, `sessionStorage`, the repository, or analytics.
 
 ## Deploy
 

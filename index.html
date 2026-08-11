@@ -345,6 +345,10 @@
             <span class="lang-en">A quiet record of research, choices, uncertainty, and ordinary days. Entries are written in Chinese and kept as Markdown files.</span>
             <span class="lang-zh">记录科研、选择、迷茫，以及那些值得留住的普通日子。所有原稿均以 Markdown 保存。</span>
           </p>
+          <button id="journalWriteButton" class="journal-write-button" type="button">
+            <span aria-hidden="true">✎</span>
+            <span class="lang-en">Write an entry</span><span class="lang-zh">写一篇日志</span>
+          </button>
         </div>
         <div id="journalList" class="journal__list" aria-live="polite">
           <article class="journal-entry">
@@ -373,6 +377,70 @@
         </button>
       </div>
       <div id="journalDialogContent" class="journal-dialog__content"></div>
+    </dialog>
+
+    <dialog id="journalEditorDialog" class="journal-editor-dialog" aria-labelledby="journalEditorTitle">
+      <form id="journalEditorForm" class="journal-editor">
+        <div class="journal-editor__bar">
+          <div>
+            <span class="journal-editor__eyebrow"><span class="lang-en">Owner editor</span><span class="lang-zh">站长编辑器</span></span>
+            <h2 id="journalEditorTitle"><span class="lang-en">Write a journal entry</span><span class="lang-zh">写一篇日志</span></h2>
+          </div>
+          <button id="journalEditorClose" class="journal-dialog__close" type="button" aria-label="Close journal editor">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+        <div class="journal-editor__content">
+          <div class="journal-editor__security">
+            <span class="journal-editor__lock" aria-hidden="true">⌁</span>
+            <p>
+              <span class="lang-en">Your token is used only for this publish request and is never saved by the page. Use a fine-grained token limited to this repository with <strong>Contents: Read and write</strong>.</span>
+              <span class="lang-zh">令牌只用于本次发布，不会被网页保存。请使用仅授权本仓库、权限为 <strong>Contents: Read and write</strong> 的 Fine-grained Token。</span>
+              <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer"><span class="lang-en">Create token ↗</span><span class="lang-zh">创建令牌 ↗</span></a>
+            </p>
+          </div>
+
+          <div class="journal-editor__grid">
+            <label class="journal-editor__field">
+              <span><span class="lang-en">Date</span><span class="lang-zh">日期</span></span>
+              <input id="journalEditorDate" name="date" type="date" required>
+            </label>
+            <label class="journal-editor__field journal-editor__field--wide">
+              <span><span class="lang-en">Title</span><span class="lang-zh">标题</span></span>
+              <input id="journalEditorEntryTitle" name="title" type="text" maxlength="100" required placeholder="今天的标题">
+            </label>
+          </div>
+
+          <label class="journal-editor__field">
+            <span><span class="lang-en">Summary</span><span class="lang-zh">摘要</span> <small><span class="lang-en">optional</span><span class="lang-zh">可选，将自动生成</span></small></span>
+            <input id="journalEditorExcerpt" name="excerpt" type="text" maxlength="180" placeholder="用一两句话概括今天">
+          </label>
+
+          <label class="journal-editor__field">
+            <span><span class="lang-en">Entry</span><span class="lang-zh">正文</span> <small>Markdown</small></span>
+            <textarea id="journalEditorBody" name="body" rows="14" required placeholder="今天发生了什么？&#10;&#10;## 今日思考&#10;&#10;……"></textarea>
+          </label>
+
+          <details class="journal-editor__preview-wrap">
+            <summary><span class="lang-en">Preview Markdown</span><span class="lang-zh">预览 Markdown</span></summary>
+            <div id="journalEditorPreview" class="journal-dialog__content journal-editor__preview"></div>
+          </details>
+
+          <label class="journal-editor__field journal-editor__token">
+            <span>GitHub Fine-grained Token</span>
+            <input id="journalEditorToken" name="token" type="password" required autocomplete="new-password" spellcheck="false" placeholder="github_pat_…" data-1p-ignore>
+          </label>
+
+          <div class="journal-editor__footer">
+            <p id="journalEditorStatus" class="journal-editor__status" role="status" aria-live="polite"></p>
+            <div class="journal-editor__actions">
+              <button id="journalEditorCancel" class="btn btn--ghost" type="button"><span class="lang-en">Cancel</span><span class="lang-zh">取消</span></button>
+              <button id="journalEditorPublish" class="btn btn--primary" type="submit"><span class="lang-en">Publish to GitHub</span><span class="lang-zh">发布到 GitHub</span></button>
+            </div>
+          </div>
+        </div>
+      </form>
     </dialog>
 
     <!-- ===== Contact ===== -->

@@ -12,6 +12,7 @@
   var dialogContent = document.getElementById("journalDialogContent");
   var closeButton = document.getElementById("journalDialogClose");
   var entries = [];
+  var entriesPromise;
 
   if (!list || !dialog || !dialogTitle || !dialogDate || !dialogContent) return;
 
@@ -151,11 +152,290 @@
     if (event.target === dialog) dialog.close();
   });
 
+  /* ---- Owner editor: publish Markdown to GitHub ---- */
+  var writeButton = document.getElementById("journalWriteButton");
+  var editorDialog = document.getElementById("journalEditorDialog");
+  var editorForm = document.getElementById("journalEditorForm");
+  var editorClose = document.getElementById("journalEditorClose");
+  var editorCancel = document.getElementById("journalEditorCancel");
+  var editorPublish = document.getElementById("journalEditorPublish");
+  var editorDate = document.getElementById("journalEditorDate");
+  var editorEntryTitle = document.getElementById("journalEditorEntryTitle");
+  var editorExcerpt = document.getElementById("journalEditorExcerpt");
+  var editorBody = document.getElementById("journalEditorBody");
+  var editorToken = document.getElementById("journalEditorToken");
+  var editorPreview = document.getElementById("journalEditorPreview");
+  var editorPreviewWrap = editorDialog && editorDialog.querySelector(".journal-editor__preview-wrap");
+  var editorStatus = document.getElementById("journalEditorStatus");
+  var editorDirty = false;
+  var lastEditorDate = "";
+  var apiBase = "https://api.github.com/repos/csxsmart/csxsmart.github.io";
+
+  function localDateString() {
+    var now = new Date();
+    var month = String(now.getMonth() + 1).padStart(2, "0");
+    var day = String(now.getDate()).padStart(2, "0");
+    return now.getFullYear() + "-" + month + "-" + day;
+  }
+
+  function stripLeadingTitle(markdown) {
+    return markdown.replace(/^#\s+[^\n]+\n+/, "").trim();
+  }
+
+  function createExcerpt(body) {
+    var plain = body
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/[`*_>\[\]()~-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return plain.length > 88 ? plain.slice(0, 88).trim() + "……" : plain;
+  }
+
+  function setEditorStatus(message, type) {
+    if (!editorStatus) return;
+    editorStatus.className = "journal-editor__status" + (type ? " is-" + type : "");
+    editorStatus.textContent = message || "";
+  }
+
+  function setEditorBusy(busy) {
+    if (editorPublish) editorPublish.disabled = busy;
+    if (editorClose) editorClose.disabled = busy;
+    if (editorCancel) editorCancel.disabled = busy;
+    if (editorForm) editorForm.setAttribute("aria-busy", String(busy));
+  }
+
+  function updatePreview() {
+    if (!editorPreview || !editorPreviewWrap || !editorPreviewWrap.open) return;
+    var title = editorEntryTitle.value.trim() || (currentLanguage() === "zh" ? "未命名日志" : "Untitled entry");
+    editorPreview.innerHTML = renderMarkdown("# " + title + "\n\n" + editorBody.value);
+  }
+
+  function decodeBase64Utf8(value) {
+    var binary = atob(value.replace(/\s/g, ""));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder("utf-8").decode(bytes);
+  }
+
+  function githubErrorMessage(response, data) {
+    var lang = currentLanguage();
+    if (response.status === 401) return lang === "zh" ? "令牌无效或已经过期。" : "The token is invalid or expired.";
+    if (response.status === 403) return lang === "zh" ? "令牌没有 Contents 写入权限，或请求受到 GitHub 限制。" : "The token lacks Contents write access, or GitHub blocked the request.";
+    if (response.status === 404) return lang === "zh" ? "未找到仓库或分支，请确认令牌已授权 csxsmart.github.io。" : "Repository or branch not found. Check that the token can access csxsmart.github.io.";
+    if (response.status === 409 || response.status === 422) return lang === "zh" ? "远端分支刚刚发生变化，请刷新页面后重试。" : "The branch changed while publishing. Refresh and try again.";
+    return (data && data.message) || (lang === "zh" ? "GitHub 请求失败，请稍后重试。" : "The GitHub request failed. Please try again.");
+  }
+
+  function githubRequest(path, token, options) {
+    options = options || {};
+    return fetch(apiBase + path, {
+      method: options.method || "GET",
+      headers: {
+        "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + token,
+        "X-GitHub-Api-Version": "2026-03-10"
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        if (!response.ok) throw new Error(githubErrorMessage(response, data));
+        return data;
+      });
+    });
+  }
+
+  function loadEditorDate(date) {
+    var existing = entries.find(function (entry) { return entry.date === date; });
+    lastEditorDate = date;
+    editorDate.value = date;
+    editorEntryTitle.value = existing ? existing.title : "";
+    editorExcerpt.value = existing ? existing.excerpt : "";
+    editorBody.value = "";
+    editorDirty = false;
+    updatePreview();
+
+    if (!existing) {
+      setEditorStatus(currentLanguage() === "zh" ? "将创建一篇新日志。" : "A new entry will be created.");
+      return Promise.resolve();
+    }
+
+    setEditorStatus(currentLanguage() === "zh" ? "正在载入当天已有日志……" : "Loading the existing entry…");
+    return fetch(existing.file + "?editor=" + Date.now(), { cache: "no-store" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("Unable to load existing entry");
+        return response.text();
+      })
+      .then(function (markdown) {
+        editorBody.value = stripLeadingTitle(markdown);
+        editorDirty = false;
+        updatePreview();
+        setEditorStatus(currentLanguage() === "zh" ? "当天已有日志，发布后将更新原文。" : "An entry exists for this date and will be updated.");
+      })
+      .catch(function () {
+        setEditorStatus(currentLanguage() === "zh" ? "正文载入失败，请刷新页面后重试。" : "The entry body could not be loaded. Refresh and try again.", "error");
+      });
+  }
+
+  function closeEditor() {
+    if (editorDirty) {
+      var warning = currentLanguage() === "zh" ? "尚未发布的内容会丢失，确定关闭吗？" : "Unpublished changes will be lost. Close the editor?";
+      if (!window.confirm(warning)) return;
+    }
+    editorToken.value = "";
+    editorDirty = false;
+    editorDialog.close();
+  }
+
+  function showPublishSuccess(commitSha, date) {
+    setEditorStatus("", "success");
+    var message = document.createTextNode(currentLanguage() === "zh" ? "发布成功。查看提交 " : "Published successfully. View commit ");
+    var link = document.createElement("a");
+    link.href = "https://github.com/csxsmart/csxsmart.github.io/commit/" + commitSha;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = commitSha.slice(0, 7) + " ↗";
+    editorStatus.appendChild(message);
+    editorStatus.appendChild(link);
+    editorStatus.appendChild(document.createTextNode(currentLanguage() === "zh" ? "。网页通常会在片刻后更新。" : ". GitHub Pages should update shortly."));
+    editorDate.value = date;
+  }
+
+  function publishEntry(event) {
+    event.preventDefault();
+    if (!editorForm.reportValidity()) return;
+
+    var token = editorToken.value.trim();
+    var date = editorDate.value;
+    var title = editorEntryTitle.value.trim();
+    var body = editorBody.value.trim();
+    var excerpt = editorExcerpt.value.trim() || createExcerpt(body);
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      setEditorStatus(currentLanguage() === "zh" ? "请选择有效日期。" : "Choose a valid date.", "error");
+      return;
+    }
+
+    setEditorBusy(true);
+    setEditorStatus(currentLanguage() === "zh" ? "正在连接 GitHub 并创建提交……" : "Connecting to GitHub and creating the commit…", "working");
+
+    var headSha;
+    var baseTreeSha;
+    var remoteEntries;
+    var file = "journal/" + date + ".md";
+    var markdown = "# " + title + "\n\n" + body + "\n";
+
+    githubRequest("/git/ref/heads/main", token)
+      .then(function (ref) {
+        headSha = ref.object.sha;
+        return Promise.all([
+          githubRequest("/git/commits/" + headSha, token),
+          githubRequest("/contents/journal/entries.json?ref=" + encodeURIComponent(headSha), token)
+        ]);
+      })
+      .then(function (results) {
+        baseTreeSha = results[0].tree.sha;
+        remoteEntries = JSON.parse(decodeBase64Utf8(results[1].content));
+        if (!Array.isArray(remoteEntries)) throw new Error(currentLanguage() === "zh" ? "远端日志索引格式无效。" : "The remote journal index is invalid.");
+
+        var existingIndex = remoteEntries.findIndex(function (entry) { return entry.date === date; });
+        var metadata = { date: date, title: title, excerpt: excerpt, file: file };
+        if (existingIndex >= 0) {
+          if (remoteEntries[existingIndex].titleEn) metadata.titleEn = remoteEntries[existingIndex].titleEn;
+          if (remoteEntries[existingIndex].excerptEn) metadata.excerptEn = remoteEntries[existingIndex].excerptEn;
+          remoteEntries[existingIndex] = metadata;
+        } else {
+          remoteEntries.push(metadata);
+        }
+        remoteEntries.sort(function (a, b) { return b.date.localeCompare(a.date); });
+
+        return githubRequest("/git/trees", token, {
+          method: "POST",
+          body: {
+            base_tree: baseTreeSha,
+            tree: [
+              { path: file, mode: "100644", type: "blob", content: markdown },
+              { path: "journal/entries.json", mode: "100644", type: "blob", content: JSON.stringify(remoteEntries, null, 2) + "\n" }
+            ]
+          }
+        });
+      })
+      .then(function (tree) {
+        var isUpdate = entries.some(function (entry) { return entry.date === date; });
+        return githubRequest("/git/commits", token, {
+          method: "POST",
+          body: {
+            message: (isUpdate ? "Update" : "Add") + " journal entry for " + date,
+            tree: tree.sha,
+            parents: [headSha]
+          }
+        });
+      })
+      .then(function (commit) {
+        return githubRequest("/git/refs/heads/main", token, {
+          method: "PATCH",
+          body: { sha: commit.sha, force: false }
+        }).then(function () { return commit; });
+      })
+      .then(function (commit) {
+        entries = remoteEntries;
+        renderEntries();
+        editorToken.value = "";
+        editorDirty = false;
+        showPublishSuccess(commit.sha, date);
+      })
+      .catch(function (error) {
+        setEditorStatus(error.message, "error");
+      })
+      .finally(function () {
+        setEditorBusy(false);
+      });
+  }
+
+  if (writeButton && editorDialog && editorForm) {
+    writeButton.addEventListener("click", function () {
+      if (!editorDialog.showModal) return;
+      editorDialog.showModal();
+      editorToken.value = "";
+      setEditorStatus(currentLanguage() === "zh" ? "正在准备编辑器……" : "Preparing the editor…");
+      Promise.resolve(entriesPromise).catch(function () {}).then(function () {
+        return loadEditorDate(localDateString());
+      });
+    });
+
+    [editorEntryTitle, editorExcerpt, editorBody].forEach(function (field) {
+      field.addEventListener("input", function () {
+        editorDirty = true;
+        updatePreview();
+      });
+    });
+
+    editorDate.addEventListener("change", function () {
+      var nextDate = editorDate.value;
+      if (editorDirty) {
+        var warning = currentLanguage() === "zh" ? "切换日期会丢失当前未发布的内容，是否继续？" : "Changing the date will discard unpublished content. Continue?";
+        if (!window.confirm(warning)) {
+          editorDate.value = lastEditorDate;
+          return;
+        }
+      }
+      loadEditorDate(nextDate);
+    });
+
+    editorPreviewWrap.addEventListener("toggle", updatePreview);
+    editorForm.addEventListener("submit", publishEntry);
+    editorClose.addEventListener("click", closeEditor);
+    editorCancel.addEventListener("click", closeEditor);
+    editorDialog.addEventListener("cancel", function (event) {
+      event.preventDefault();
+      closeEditor();
+    });
+  }
+
   new MutationObserver(function (mutations) {
     if (mutations.some(function (mutation) { return mutation.attributeName === "data-lang"; })) renderEntries();
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-lang"] });
 
-  fetch("journal/entries.json")
+  entriesPromise = fetch("journal/entries.json")
     .then(function (response) {
       if (!response.ok) throw new Error("Unable to load journal index");
       return response.json();
